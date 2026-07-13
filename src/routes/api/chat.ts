@@ -123,7 +123,7 @@ ${contextBlock || "(No relevant memories were found for this question.)"}`;
         const result = streamText({
           model: gateway("google/gemini-3-flash-preview"),
           system: systemPrompt,
-          messages: convertToModelMessages(uiMessages),
+          messages: await convertToModelMessages(uiMessages),
           onFinish: async ({ text }) => {
             await supabase.from("chat_messages").insert({
               user_id: userId,
