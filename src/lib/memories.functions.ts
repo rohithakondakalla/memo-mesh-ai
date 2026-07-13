@@ -4,13 +4,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const BUCKET = "memories";
 
-type SupabaseCtxClient = Parameters<
-  Parameters<typeof requireSupabaseAuth.server>[0]
->[0]["context"]["supabase"] extends never
-  ? never
-  : never;
-
 // --- Internal: run the embedding pipeline for a document's text ---
+
 async function processText(
   supabase: any,
   documentId: string,
