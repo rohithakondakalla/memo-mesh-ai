@@ -81,11 +81,20 @@ export type Database = {
       }
       documents: {
         Row: {
+          action_items: string[]
+          category: string | null
           created_at: string
+          doc_type: string | null
           error: string | null
+          event_id: string | null
           file_mime: string | null
           file_path: string | null
           id: string
+          important_dates: Json
+          keywords: string[]
+          locations: string[]
+          organizations: string[]
+          people: string[]
           source_type: Database["public"]["Enums"]["memory_source_type"]
           status: Database["public"]["Enums"]["memory_status"]
           summary: string | null
@@ -94,11 +103,20 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          action_items?: string[]
+          category?: string | null
           created_at?: string
+          doc_type?: string | null
           error?: string | null
+          event_id?: string | null
           file_mime?: string | null
           file_path?: string | null
           id?: string
+          important_dates?: Json
+          keywords?: string[]
+          locations?: string[]
+          organizations?: string[]
+          people?: string[]
           source_type: Database["public"]["Enums"]["memory_source_type"]
           status?: Database["public"]["Enums"]["memory_status"]
           summary?: string | null
@@ -107,17 +125,136 @@ export type Database = {
           user_id: string
         }
         Update: {
+          action_items?: string[]
+          category?: string | null
           created_at?: string
+          doc_type?: string | null
           error?: string | null
+          event_id?: string | null
           file_mime?: string | null
           file_path?: string | null
           id?: string
+          important_dates?: Json
+          keywords?: string[]
+          locations?: string[]
+          organizations?: string[]
+          people?: string[]
           source_type?: Database["public"]["Enums"]["memory_source_type"]
           status?: Database["public"]["Enums"]["memory_status"]
           summary?: string | null
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "memory_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memory_connections: {
+        Row: {
+          created_at: string
+          doc_a: string
+          doc_b: string
+          id: string
+          relation: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doc_a: string
+          doc_b: string
+          id?: string
+          relation?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doc_a?: string
+          doc_b?: string
+          id?: string
+          relation?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_connections_doc_a_fkey"
+            columns: ["doc_a"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memory_connections_doc_b_fkey"
+            columns: ["doc_b"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memory_events: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string | null
+          event_type: string | null
+          id: string
+          name: string
+          start_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          event_type?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          event_type?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
         }
         Relationships: []
       }
