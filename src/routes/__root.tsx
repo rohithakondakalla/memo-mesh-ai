@@ -79,18 +79,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Memory OS — Your intelligent personal memory" },
+      { title: "Memory Weaver — From memory to meaning." },
       {
         name: "description",
         content:
-          "Memory OS understands your PDFs, images, and notes. Upload anything, then ask questions in plain language and get answers with sources.",
+          "Memory Weaver quietly organizes your PDFs, images, and notes into meaningful memories. Ask naturally instead of searching folders — from memory to meaning.",
       },
-      { name: "author", content: "Memory OS" },
-      { property: "og:title", content: "Memory OS — Your intelligent personal memory" },
+      { name: "author", content: "Memory Weaver" },
+      { property: "og:title", content: "Memory Weaver — From memory to meaning." },
       {
         property: "og:description",
         content:
-          "Upload PDFs, images, and notes, then ask questions and get sourced answers from your own second brain.",
+          "Your second brain. Upload anything, then ask in plain language and get sourced answers woven from your own memories.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
