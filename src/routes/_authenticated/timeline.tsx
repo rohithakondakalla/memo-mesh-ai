@@ -9,7 +9,6 @@ import {
   Image as ImageIcon,
   StickyNote,
   Link2,
-  Clock,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/timeline")({
