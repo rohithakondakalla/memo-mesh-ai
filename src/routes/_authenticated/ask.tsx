@@ -230,7 +230,7 @@ function ChatInner({
         <div className="flex items-center justify-between border-b border-border/60 px-4 py-2">
           <div className="mx-auto flex w-full max-w-3xl items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              Chatting with your memory
+              Weaving through your memories
             </p>
             <Button variant="ghost" size="sm" onClick={startFresh} disabled={busy}>
               <Eraser className="mr-1.5 h-3.5 w-3.5" />
