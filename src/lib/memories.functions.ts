@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const BUCKET = "memories";
 
-// --- Internal: run the embedding pipeline for a document's text ---
+// --- Internal: run the embedding + metadata + event-inference pipeline ---
 
 async function processText(
   supabase: any,
@@ -12,7 +12,9 @@ async function processText(
   userId: string,
   text: string,
 ): Promise<void> {
-  const { chunkText, summarizeAndTitle } = await import("./ingest.server");
+  const { chunkText, extractMetadata, inferEventForDocument } = await import(
+    "./ingest.server"
+  );
   const { embedTexts } = await import("./embeddings.server");
 
   const trimmed = (text ?? "").trim();
@@ -24,14 +26,14 @@ async function processText(
     return;
   }
 
-  const [{ title, summary }, chunks] = await Promise.all([
-    summarizeAndTitle(trimmed),
+  const [meta, chunks] = await Promise.all([
+    extractMetadata(trimmed),
     Promise.resolve(chunkText(trimmed)),
   ]);
 
   const embeddings = await embedTexts(chunks);
 
-  const rows = chunks.map((content, index) => ({
+  const rows = chunks.map((content: string, index: number) => ({
     document_id: documentId,
     user_id: userId,
     content,
@@ -39,15 +41,120 @@ async function processText(
     embedding: JSON.stringify(embeddings[index]),
   }));
 
-  // Replace any existing chunks (in case of re-processing).
   await supabase.from("document_chunks").delete().eq("document_id", documentId);
   const { error: chunkError } = await supabase.from("document_chunks").insert(rows);
   if (chunkError) throw chunkError;
 
   await supabase
     .from("documents")
-    .update({ title, summary, status: "ready", error: null })
+    .update({
+      title: meta.title,
+      summary: meta.summary,
+      doc_type: meta.docType,
+      category: meta.category,
+      people: meta.people,
+      organizations: meta.organizations,
+      locations: meta.locations,
+      keywords: meta.keywords,
+      action_items: meta.actionItems,
+      important_dates: meta.importantDates as unknown as object,
+      status: "ready",
+      error: null,
+    })
     .eq("id", documentId);
+
+  // --- Event inference: try to attach this memory to a real-world event ---
+  try {
+    const { data: events } = await supabase
+      .from("memory_events")
+      .select("id, name, event_type, description")
+      .order("created_at", { ascending: false })
+      .limit(30);
+
+    const { data: recent } = await supabase
+      .from("documents")
+      .select("id, title, doc_type, category, event_id")
+      .eq("status", "ready")
+      .neq("id", documentId)
+      .order("created_at", { ascending: false })
+      .limit(30);
+
+    const result = await inferEventForDocument({
+      newDoc: {
+        title: meta.title,
+        summary: meta.summary,
+        doc_type: meta.docType,
+        category: meta.category,
+        people: meta.people,
+        organizations: meta.organizations,
+        locations: meta.locations,
+        keywords: meta.keywords,
+        important_dates: meta.importantDates,
+      },
+      existingEvents: (events ?? []) as any[],
+      recentDocs: (recent ?? []) as any[],
+    });
+
+    let eventId: string | null = null;
+    let related: string[] = [];
+
+    if (result.decision === "attach") {
+      eventId = result.eventId;
+      related = result.relatedDocIds;
+    } else if (result.decision === "create") {
+      const { data: newEvent, error: evErr } = await supabase
+        .from("memory_events")
+        .insert({
+          user_id: userId,
+          name: result.name,
+          event_type: result.event_type,
+          description: result.description,
+        })
+        .select()
+        .single();
+      if (!evErr && newEvent) {
+        eventId = newEvent.id;
+        related = result.relatedDocIds;
+        // attach the related recent docs to the new event too
+        if (related.length > 0) {
+          await supabase
+            .from("documents")
+            .update({ event_id: eventId })
+            .in("id", related);
+        }
+      }
+    }
+
+    if (eventId) {
+      await supabase
+        .from("documents")
+        .update({ event_id: eventId })
+        .eq("id", documentId);
+    }
+
+    // Always record pairwise connections to related docs the AI identified
+    if (related.length > 0) {
+      const connectionRows = related.map((otherId) => {
+        // canonical ordering to satisfy the unique pair constraint
+        const [a, b] =
+          documentId < otherId
+            ? [documentId, otherId]
+            : [otherId, documentId];
+        return {
+          user_id: userId,
+          doc_a: a,
+          doc_b: b,
+          relation: eventId ? "same_event" : "related",
+        };
+      });
+      await supabase
+        .from("memory_connections")
+        .upsert(connectionRows, { onConflict: "doc_a,doc_b", ignoreDuplicates: true });
+    }
+  } catch (e) {
+    // Never fail the whole ingestion just because inference failed.
+    console.error("Event inference failed:", e);
+  }
 }
 
 // --- Add a note (inserts + processes inline) ---
@@ -157,17 +264,63 @@ export const processUpload = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-// --- List all documents for the current user ---
+// --- List all documents for the current user (with event info) ---
 export const listDocuments = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     const { data, error } = await supabase
       .from("documents")
-      .select("id, title, source_type, status, summary, error, created_at")
+      .select(
+        "id, title, source_type, status, summary, error, created_at, doc_type, category, keywords, important_dates, action_items, event_id, memory_events(id, name, event_type)",
+      )
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data;
+  });
+
+// --- Get a single document with its connections ---
+export const getDocument = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ id: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { data: doc, error } = await supabase
+      .from("documents")
+      .select(
+        "id, title, source_type, status, summary, error, created_at, doc_type, category, people, organizations, locations, keywords, important_dates, action_items, event_id, file_path, file_mime, memory_events(id, name, event_type, description)",
+      )
+      .eq("id", data.id)
+      .single();
+    if (error) throw error;
+
+    // Related memories via connections graph
+    const { data: connections } = await supabase
+      .from("memory_connections")
+      .select("doc_a, doc_b, relation")
+      .or(`doc_a.eq.${data.id},doc_b.eq.${data.id}`);
+
+    const relatedIds = (connections ?? [])
+      .map((c) => (c.doc_a === data.id ? c.doc_b : c.doc_a))
+      .filter((v, i, a) => a.indexOf(v) === i);
+
+    let related: Array<{
+      id: string;
+      title: string;
+      source_type: string;
+      category: string | null;
+    }> = [];
+    if (relatedIds.length > 0) {
+      const { data: relDocs } = await supabase
+        .from("documents")
+        .select("id, title, source_type, category")
+        .in("id", relatedIds);
+      related = (relDocs ?? []) as any;
+    }
+
+    return { doc, related };
   });
 
 // --- Delete a document and its file ---
