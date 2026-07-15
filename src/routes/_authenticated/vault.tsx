@@ -453,20 +453,22 @@ function DocumentDialog({
 
               <MetaGrid doc={data.doc} />
 
-              {data.doc.important_dates?.length > 0 && (
-                <MetaBlock icon={CalendarClock} title="Important dates">
-                  <ul className="space-y-1 text-sm">
-                    {data.doc.important_dates.map(
-                      (d: { date: string; label: string }, i: number) => (
+              {(() => {
+                const dates = (data.doc.important_dates ??
+                  []) as Array<{ date: string; label: string }>;
+                return dates.length > 0 ? (
+                  <MetaBlock icon={CalendarClock} title="Important dates">
+                    <ul className="space-y-1 text-sm">
+                      {dates.map((d, i) => (
                         <li key={i} className="flex justify-between">
                           <span>{d.label}</span>
                           <span className="text-muted-foreground">{d.date}</span>
                         </li>
-                      ),
-                    )}
-                  </ul>
-                </MetaBlock>
-              )}
+                      ))}
+                    </ul>
+                  </MetaBlock>
+                ) : null;
+              })()}
 
               {data.doc.action_items?.length > 0 && (
                 <MetaBlock icon={CheckSquare} title="Action items">
