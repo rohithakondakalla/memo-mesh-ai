@@ -369,7 +369,7 @@ function ChatInner({
           >
             <PromptInputTextarea
               ref={inputRef}
-              placeholder="Ask your memories…"
+              placeholder="Ask anything about your memories…"
             />
             <PromptInputFooter className="justify-end">
               <PromptInputSubmit status={status} disabled={busy} />
