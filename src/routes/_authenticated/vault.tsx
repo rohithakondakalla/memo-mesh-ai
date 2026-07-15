@@ -44,7 +44,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/vault")({
   head: () => ({
-    meta: [{ title: "Memory Vault · Memory OS" }],
+    meta: [{ title: "Memory Vault · Memory Weaver" }],
   }),
   validateSearch: z.object({
     upload: z.string().optional(),
