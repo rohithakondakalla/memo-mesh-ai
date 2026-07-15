@@ -346,17 +346,19 @@ function VaultPage() {
               Loading…
             </p>
           ) : !filtered || filtered.length === 0 ? (
-            <div className="mt-16 flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
-              <Upload className="h-8 w-8 text-muted-foreground" />
-              <h3 className="mt-4 font-medium">
+            <div className="mt-16 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/40 py-16 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <Upload className="h-6 w-6" />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold tracking-tight">
                 {docs && docs.length > 0
                   ? "No memories match that search."
-                  : "Nothing to remember yet"}
+                  : "Your vault is quiet — for now."}
               </h3>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">
                 {docs && docs.length > 0
                   ? "Try a different keyword or event name."
-                  : "Upload a passport, a bill, or write a note. Your second brain will do the rest."}
+                  : "Upload a passport, a receipt or a photo. Memory Weaver will read it, understand it, and connect it to the rest of your life."}
               </p>
             </div>
           ) : (
