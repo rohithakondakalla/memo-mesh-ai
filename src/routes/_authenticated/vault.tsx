@@ -138,6 +138,15 @@ function VaultPage() {
       return;
     }
 
+    // Snapshot event names before processing, to detect newly-created events.
+    let eventsBefore = new Set<string>();
+    try {
+      const before = await listEvents();
+      eventsBefore = new Set((before ?? []).map((e: any) => e.id));
+    } catch {
+      /* non-fatal */
+    }
+
     for (const file of Array.from(files)) {
       const isPdf = file.type === "application/pdf";
       const isImage = file.type.startsWith("image/");
@@ -148,7 +157,21 @@ function VaultPage() {
       const sourceType = isPdf ? "pdf" : "image";
       const path = `${userId}/${crypto.randomUUID()}-${file.name}`;
 
-      const uploadToast = toast.loading(`Uploading ${file.name}…`);
+      const steps = [
+        "Reading document…",
+        "Extracting text…",
+        "Understanding content…",
+        "Identifying people, places and dates…",
+        "Creating memory connections…",
+        "Building your second brain…",
+      ];
+      const toastId = toast.loading(`${file.name} · ${steps[0]}`);
+      let step = 0;
+      const stepper = setInterval(() => {
+        step = Math.min(step + 1, steps.length - 1);
+        toast.loading(`${file.name} · ${steps[step]}`, { id: toastId });
+      }, 1600);
+
       try {
         const { error: upErr } = await supabase.storage
           .from("memories")
@@ -164,13 +187,43 @@ function VaultPage() {
           },
         });
         await refresh();
-        toast.loading(`Understanding ${file.name}…`, { id: uploadToast });
         await processUpload({ data: { documentId: id } });
+        clearInterval(stepper);
+        toast.success(`${file.name} · Done. Woven into your memory.`, {
+          id: toastId,
+        });
         await refresh();
-        toast.success(`${file.name} added to your memory.`, { id: uploadToast });
+
+        // Detect any newly-created Memory Event and celebrate it.
+        try {
+          const after = await listEvents();
+          const newEvents = (after ?? []).filter(
+            (e: any) => !eventsBefore.has(e.id),
+          );
+          eventsBefore = new Set((after ?? []).map((e: any) => e.id));
+          for (const ev of newEvents) {
+            const count = (ev as any).documents?.length ?? 0;
+            if (count < 1) continue;
+            toast.success(
+              `🧠 New Memory Event Created\n${ev.name}\n${count} ${count === 1 ? "memory" : "memories"} connected.`,
+              {
+                duration: 6000,
+                action: {
+                  label: "View Event",
+                  onClick: () => {
+                    window.location.href = "/timeline";
+                  },
+                },
+              },
+            );
+          }
+        } catch {
+          /* non-fatal */
+        }
       } catch (err) {
+        clearInterval(stepper);
         toast.error(`Failed to process ${file.name}: ${(err as Error).message}`, {
-          id: uploadToast,
+          id: toastId,
         });
         await refresh();
       }
