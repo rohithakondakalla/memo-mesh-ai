@@ -106,16 +106,16 @@ function AuthPage() {
       <div className="flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <img src={logo} alt="Memory OS" className="h-9 w-9 rounded-lg" />
-            <span className="text-lg font-semibold tracking-tight">Memory OS</span>
+            <img src={logo} alt="Memory Weaver" className="h-9 w-9 rounded-lg" />
+            <span className="text-lg font-semibold tracking-tight">Memory Weaver</span>
           </div>
           <h2 className="text-2xl font-semibold tracking-tight">
             {mode === "signin" ? "Welcome back" : "Create your account"}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {mode === "signin"
-              ? "Sign in to reach your memories."
-              : "Start building your personal memory."}
+              ? "Pick up where your memory left off."
+              : "Start weaving your second brain."}
           </p>
 
           <Button
