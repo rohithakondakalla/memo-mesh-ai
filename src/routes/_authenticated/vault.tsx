@@ -262,11 +262,15 @@ function VaultPage() {
         <div className="mx-auto w-full max-w-6xl px-6 py-8 pb-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">
+              <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary/80">
+                Your second brain
+              </p>
+              <h1 className="mt-1 text-3xl font-semibold tracking-tight">
                 Memory Vault
               </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Everything you've asked your second brain to remember.
+              <p className="mt-2 text-sm text-muted-foreground">
+                Every document, image and note Memory Weaver has quietly
+                understood on your behalf.
               </p>
             </div>
             <div className="flex gap-2">
