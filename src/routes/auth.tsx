@@ -11,11 +11,11 @@ import logo from "@/assets/memory-os-logo.png";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in · Memory OS" },
+      { title: "Sign in · Memory Weaver" },
       {
         name: "description",
         content:
-          "Sign in to Memory OS, your intelligent personal memory assistant for PDFs, images, and notes.",
+          "Sign in to Memory Weaver — your intelligent second brain for PDFs, images, and notes. From memory to meaning.",
       },
     ],
   }),
