@@ -81,8 +81,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-border px-4 py-3 md:hidden">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Memory OS" className="h-7 w-7 rounded-md" />
-            <span className="font-semibold tracking-tight">Memory OS</span>
+            <img src={logo} alt="Memory Weaver" className="h-7 w-7 rounded-md" />
+            <span className="font-semibold tracking-tight">Memory Weaver</span>
           </Link>
           <div className="flex items-center gap-1">
             {nav.map((item) => {
