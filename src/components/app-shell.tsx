@@ -1,6 +1,12 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { MessageSquare, Library, LogOut } from "lucide-react";
+import {
+  MessageSquare,
+  BookOpen,
+  LogOut,
+  LayoutDashboard,
+  Clock,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -8,8 +14,10 @@ import logo from "@/assets/memory-os-logo.png";
 import type { ReactNode } from "react";
 
 const nav = [
-  { to: "/", label: "Ask", icon: MessageSquare },
-  { to: "/library", label: "Library", icon: Library },
+  { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/ask", label: "Ask", icon: MessageSquare },
+  { to: "/vault", label: "Memory Vault", icon: BookOpen },
+  { to: "/timeline", label: "Timeline", icon: Clock },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -29,9 +37,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside className="hidden w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 md:flex">
         <Link to="/" className="flex items-center gap-2.5 px-2">
           <img src={logo} alt="Memory OS" className="h-8 w-8 rounded-lg" />
-          <span className="text-base font-semibold tracking-tight">
-            Memory OS
-          </span>
+          <div className="flex flex-col leading-tight">
+            <span className="text-base font-semibold tracking-tight">
+              Memory OS
+            </span>
+            <span className="text-[11px] text-muted-foreground">
+              Your second brain
+            </span>
+          </div>
         </Link>
 
         <nav className="mt-8 flex flex-1 flex-col gap-1">
@@ -65,7 +78,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         </Button>
       </aside>
 
-      {/* Mobile top bar */}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-border px-4 py-3 md:hidden">
           <Link to="/" className="flex items-center gap-2">
@@ -73,14 +85,21 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="font-semibold tracking-tight">Memory OS</span>
           </Link>
           <div className="flex items-center gap-1">
-            {nav.map((item) => (
-              <Link key={item.to} to={item.to}>
-                <Button variant="ghost" size="icon-sm">
-                  <item.icon className="h-4 w-4" />
-                </Button>
-              </Link>
-            ))}
-            <Button variant="ghost" size="icon-sm" onClick={signOut}>
+            {nav.map((item) => {
+              const active = pathname === item.to;
+              return (
+                <Link key={item.to} to={item.to}>
+                  <Button
+                    variant={active ? "secondary" : "ghost"}
+                    size="icon-sm"
+                    aria-label={item.label}
+                  >
+                    <item.icon className="h-4 w-4" />
+                  </Button>
+                </Link>
+              );
+            })}
+            <Button variant="ghost" size="icon-sm" onClick={signOut} aria-label="Sign out">
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
