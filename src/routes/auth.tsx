@@ -82,16 +82,20 @@ function AuthPage() {
     <div className="flex min-h-screen bg-background">
       <div className="hidden flex-1 flex-col justify-between bg-sidebar p-12 lg:flex">
         <Link to="/auth" className="flex items-center gap-3">
-          <img src={logo} alt="Memory OS" className="h-9 w-9 rounded-lg" />
-          <span className="text-lg font-semibold tracking-tight">Memory OS</span>
+          <img src={logo} alt="Memory Weaver" className="h-9 w-9 rounded-lg" />
+          <span className="text-lg font-semibold tracking-tight">Memory Weaver</span>
         </Link>
         <div className="max-w-md">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-primary/80">
+            From memory to meaning.
+          </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight text-foreground">
-            Your second brain that actually remembers.
+            Weave your documents into a memory that answers you back.
           </h1>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-            Upload PDFs, images, and notes — then just ask. Memory OS finds what
-            you need by meaning, not filenames, and cites where it came from.
+            Upload PDFs, images, and notes — then just ask. Memory Weaver
+            finds what you need by meaning, connects it into real-world
+            events, and always cites where it came from.
           </p>
         </div>
         <p className="text-sm text-muted-foreground">
