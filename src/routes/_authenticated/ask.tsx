@@ -352,7 +352,7 @@ function ChatInner({
           {status === "submitted" && (
             <Message from="assistant">
               <MessageContent>
-                <Shimmer>Searching your memories…</Shimmer>
+                <Shimmer>Weaving through your memories…</Shimmer>
               </MessageContent>
             </Message>
           )}
