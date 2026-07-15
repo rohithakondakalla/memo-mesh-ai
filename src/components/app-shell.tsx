@@ -36,13 +36,13 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="flex h-screen overflow-hidden bg-background">
       <aside className="hidden w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 md:flex">
         <Link to="/" className="flex items-center gap-2.5 px-2">
-          <img src={logo} alt="Memory OS" className="h-8 w-8 rounded-lg" />
+          <img src={logo} alt="Memory Weaver" className="h-8 w-8 rounded-lg" />
           <div className="flex flex-col leading-tight">
             <span className="text-base font-semibold tracking-tight">
-              Memory OS
+              Memory Weaver
             </span>
             <span className="text-[11px] text-muted-foreground">
-              Your second brain
+              From memory to meaning.
             </span>
           </div>
         </Link>
@@ -55,13 +55,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
                   active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground hover:translate-x-0.5",
                 )}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className={cn("h-4 w-4 transition-colors", active && "text-primary")} />
                 {item.label}
               </Link>
             );
@@ -81,8 +81,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-border px-4 py-3 md:hidden">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Memory OS" className="h-7 w-7 rounded-md" />
-            <span className="font-semibold tracking-tight">Memory OS</span>
+            <img src={logo} alt="Memory Weaver" className="h-7 w-7 rounded-md" />
+            <span className="font-semibold tracking-tight">Memory Weaver</span>
           </Link>
           <div className="flex items-center gap-1">
             {nav.map((item) => {

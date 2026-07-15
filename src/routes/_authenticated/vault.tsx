@@ -11,7 +11,7 @@ import {
   deleteDocument,
   getDocument,
 } from "@/lib/memories.functions";
-import { getFileUrl } from "@/lib/insights.functions";
+import { getFileUrl, listEvents } from "@/lib/insights.functions";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,7 +44,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/vault")({
   head: () => ({
-    meta: [{ title: "Memory Vault · Memory OS" }],
+    meta: [{ title: "Memory Vault · Memory Weaver" }],
   }),
   validateSearch: z.object({
     upload: z.string().optional(),
@@ -138,6 +138,15 @@ function VaultPage() {
       return;
     }
 
+    // Snapshot event names before processing, to detect newly-created events.
+    let eventsBefore = new Set<string>();
+    try {
+      const before = await listEvents();
+      eventsBefore = new Set((before ?? []).map((e: any) => e.id));
+    } catch {
+      /* non-fatal */
+    }
+
     for (const file of Array.from(files)) {
       const isPdf = file.type === "application/pdf";
       const isImage = file.type.startsWith("image/");
@@ -148,7 +157,21 @@ function VaultPage() {
       const sourceType = isPdf ? "pdf" : "image";
       const path = `${userId}/${crypto.randomUUID()}-${file.name}`;
 
-      const uploadToast = toast.loading(`Uploading ${file.name}…`);
+      const steps = [
+        "Reading document…",
+        "Extracting text…",
+        "Understanding content…",
+        "Identifying people, places and dates…",
+        "Creating memory connections…",
+        "Building your second brain…",
+      ];
+      const toastId = toast.loading(`${file.name} · ${steps[0]}`);
+      let step = 0;
+      const stepper = setInterval(() => {
+        step = Math.min(step + 1, steps.length - 1);
+        toast.loading(`${file.name} · ${steps[step]}`, { id: toastId });
+      }, 1600);
+
       try {
         const { error: upErr } = await supabase.storage
           .from("memories")
@@ -164,13 +187,43 @@ function VaultPage() {
           },
         });
         await refresh();
-        toast.loading(`Understanding ${file.name}…`, { id: uploadToast });
         await processUpload({ data: { documentId: id } });
+        clearInterval(stepper);
+        toast.success(`${file.name} · Done. Woven into your memory.`, {
+          id: toastId,
+        });
         await refresh();
-        toast.success(`${file.name} added to your memory.`, { id: uploadToast });
+
+        // Detect any newly-created Memory Event and celebrate it.
+        try {
+          const after = await listEvents();
+          const newEvents = (after ?? []).filter(
+            (e: any) => !eventsBefore.has(e.id),
+          );
+          eventsBefore = new Set((after ?? []).map((e: any) => e.id));
+          for (const ev of newEvents) {
+            const count = (ev as any).documents?.length ?? 0;
+            if (count < 1) continue;
+            toast.success(
+              `🧠 New Memory Event Created\n${ev.name}\n${count} ${count === 1 ? "memory" : "memories"} connected.`,
+              {
+                duration: 6000,
+                action: {
+                  label: "View Event",
+                  onClick: () => {
+                    window.location.href = "/timeline";
+                  },
+                },
+              },
+            );
+          }
+        } catch {
+          /* non-fatal */
+        }
       } catch (err) {
+        clearInterval(stepper);
         toast.error(`Failed to process ${file.name}: ${(err as Error).message}`, {
-          id: uploadToast,
+          id: toastId,
         });
         await refresh();
       }
@@ -209,11 +262,15 @@ function VaultPage() {
         <div className="mx-auto w-full max-w-6xl px-6 py-8 pb-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">
+              <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary/80">
+                Your second brain
+              </p>
+              <h1 className="mt-1 text-3xl font-semibold tracking-tight">
                 Memory Vault
               </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Everything you've asked your second brain to remember.
+              <p className="mt-2 text-sm text-muted-foreground">
+                Every document, image and note Memory Weaver has quietly
+                understood on your behalf.
               </p>
             </div>
             <div className="flex gap-2">
@@ -289,17 +346,19 @@ function VaultPage() {
               Loading…
             </p>
           ) : !filtered || filtered.length === 0 ? (
-            <div className="mt-16 flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
-              <Upload className="h-8 w-8 text-muted-foreground" />
-              <h3 className="mt-4 font-medium">
+            <div className="mt-16 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/40 py-16 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <Upload className="h-6 w-6" />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold tracking-tight">
                 {docs && docs.length > 0
                   ? "No memories match that search."
-                  : "Nothing to remember yet"}
+                  : "Your vault is quiet — for now."}
               </h3>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">
                 {docs && docs.length > 0
                   ? "Try a different keyword or event name."
-                  : "Upload a passport, a bill, or write a note. Your second brain will do the rest."}
+                  : "Upload a passport, a receipt or a photo. Memory Weaver will read it, understand it, and connect it to the rest of your life."}
               </p>
             </div>
           ) : (

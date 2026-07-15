@@ -41,7 +41,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/ask")({
   head: () => ({
-    meta: [{ title: "Ask · Memory OS" }],
+    meta: [{ title: "Ask · Memory Weaver" }],
   }),
   validateSearch: z.object({
     q: z.string().optional(),
@@ -230,7 +230,7 @@ function ChatInner({
         <div className="flex items-center justify-between border-b border-border/60 px-4 py-2">
           <div className="mx-auto flex w-full max-w-3xl items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              Chatting with your memory
+              Weaving through your memories
             </p>
             <Button variant="ghost" size="sm" onClick={startFresh} disabled={busy}>
               <Eraser className="mr-1.5 h-3.5 w-3.5" />
@@ -246,15 +246,15 @@ function ChatInner({
             <ConversationEmptyState
               className="h-full"
               icon={<img src={logo} alt="" className="h-14 w-14 rounded-2xl" />}
-              title="Ask your memory anything"
-              description="I'll search across your PDFs, images, and notes and answer with sources, related memories, and follow-up questions."
+              title="Ask anything about your memories."
+              description="I'll weave together your PDFs, images, and notes — and answer with sources, related memories, and follow-up questions."
             >
               <div className="mt-4 flex flex-wrap justify-center gap-2">
                 {[
-                  "When does my passport expire?",
-                  "Show everything related to my Japan trip",
-                  "What action items do I have?",
-                  "Summarize my latest bill",
+                  "What was the warranty my brother sent?",
+                  "Which report mentioned Vitamin D deficiency?",
+                  "Show everything related to my Japan trip.",
+                  "Where is the passport I renewed last year?",
                 ].map((s) => (
                   <button
                     key={s}
@@ -352,7 +352,7 @@ function ChatInner({
           {status === "submitted" && (
             <Message from="assistant">
               <MessageContent>
-                <Shimmer>Searching your memories…</Shimmer>
+                <Shimmer>Weaving through your memories…</Shimmer>
               </MessageContent>
             </Message>
           )}
@@ -369,7 +369,7 @@ function ChatInner({
           >
             <PromptInputTextarea
               ref={inputRef}
-              placeholder="Ask your memories…"
+              placeholder="Ask anything about your memories…"
             />
             <PromptInputFooter className="justify-end">
               <PromptInputSubmit status={status} disabled={busy} />

@@ -9,12 +9,11 @@ import {
   Image as ImageIcon,
   StickyNote,
   Link2,
-  Clock,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/timeline")({
   head: () => ({
-    meta: [{ title: "Timeline · Memory OS" }],
+    meta: [{ title: "Timeline · Memory Weaver" }],
   }),
   component: TimelinePage,
 });
@@ -55,24 +54,51 @@ function TimelinePage() {
       <div className="h-full overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl px-6 py-8 pb-16">
           <header className="mb-8">
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary/80">
+              Your story, woven
+            </p>
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight">
               Memory Timeline
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Your memories in the order they happened.
+            <p className="mt-2 text-sm text-muted-foreground">
+              Your life's timeline, in the order it actually happened.
             </p>
           </header>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-24 text-muted-foreground">
-              <Shimmer>Building your timeline…</Shimmer>
+              <Shimmer>Weaving your timeline…</Shimmer>
             </div>
           ) : grouped.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border py-16 text-center">
-              <Clock className="mx-auto h-8 w-8 text-muted-foreground" />
-              <p className="mt-4 text-sm text-muted-foreground">
-                Your timeline will fill up as you add memories.
+            <div className="rounded-2xl border border-dashed border-border bg-card/40 py-20 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center">
+                <svg
+                  viewBox="0 0 64 64"
+                  className="h-16 w-16 text-primary/60"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                >
+                  <circle cx="14" cy="14" r="4" />
+                  <circle cx="50" cy="20" r="4" />
+                  <circle cx="20" cy="42" r="4" />
+                  <circle cx="46" cy="50" r="4" />
+                  <path d="M18 14 L46 20 M16 18 L20 38 M24 42 L46 48 M50 24 L46 46" strokeDasharray="2 3" />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-lg font-medium">Your story begins here.</h3>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                Upload your first passport, receipt, bill, medical report or
+                note — Memory Weaver will automatically connect the dots into
+                a timeline you can navigate.
               </p>
+              <Link
+                to="/vault"
+                className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Add your first memory
+              </Link>
             </div>
           ) : (
             <div className="space-y-10">
