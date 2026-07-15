@@ -357,10 +357,14 @@ function EmptyDashboard() {
       <h2 className="mt-5 text-xl font-semibold tracking-tight">
         Your memories are waiting to be woven together.
       </h2>
+      <p className="mx-auto mt-2 max-w-md text-sm font-medium text-foreground">
+        Start building your second brain.
+      </p>
       <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-        Upload a passport, a receipt, a bill or a note. Memory Weaver will
-        read it, understand it, and start connecting the dots into your
-        second brain.
+        Upload anything you want to remember (PDF, DOCX, XLSX, PPTX, TXT,
+        Images, and more). Memory Weaver understands the context,
+        intelligently connects related information, and helps you retrieve
+        it naturally whenever you need it.
       </p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
         <Link to="/vault" search={{ upload: "1" } as any}>
