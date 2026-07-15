@@ -36,13 +36,13 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="flex h-screen overflow-hidden bg-background">
       <aside className="hidden w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 md:flex">
         <Link to="/" className="flex items-center gap-2.5 px-2">
-          <img src={logo} alt="Memory OS" className="h-8 w-8 rounded-lg" />
+          <img src={logo} alt="Memory Weaver" className="h-8 w-8 rounded-lg" />
           <div className="flex flex-col leading-tight">
             <span className="text-base font-semibold tracking-tight">
-              Memory OS
+              Memory Weaver
             </span>
             <span className="text-[11px] text-muted-foreground">
-              Your second brain
+              From memory to meaning.
             </span>
           </div>
         </Link>
