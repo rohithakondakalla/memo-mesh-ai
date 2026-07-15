@@ -55,13 +55,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
                   active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground hover:translate-x-0.5",
                 )}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className={cn("h-4 w-4 transition-colors", active && "text-primary")} />
                 {item.label}
               </Link>
             );
