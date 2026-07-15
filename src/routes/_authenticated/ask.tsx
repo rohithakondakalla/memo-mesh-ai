@@ -41,7 +41,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/ask")({
   head: () => ({
-    meta: [{ title: "Ask · Memory OS" }],
+    meta: [{ title: "Ask · Memory Weaver" }],
   }),
   validateSearch: z.object({
     q: z.string().optional(),
