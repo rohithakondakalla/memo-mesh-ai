@@ -14,7 +14,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/timeline")({
   head: () => ({
-    meta: [{ title: "Timeline · Memory OS" }],
+    meta: [{ title: "Timeline · Memory Weaver" }],
   }),
   component: TimelinePage,
 });
