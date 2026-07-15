@@ -11,7 +11,7 @@ import {
   deleteDocument,
   getDocument,
 } from "@/lib/memories.functions";
-import { getFileUrl } from "@/lib/insights.functions";
+import { getFileUrl, listEvents } from "@/lib/insights.functions";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
