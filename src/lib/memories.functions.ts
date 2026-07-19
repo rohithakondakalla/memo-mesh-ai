@@ -379,7 +379,21 @@ export const getDocument = createServerFn({ method: "GET" })
       related = (relDocs ?? []) as any;
     }
 
-    return { doc, related };
+    // For notes, reconstruct the original body from stored chunks so the
+    // detail view can display exactly what the user wrote.
+    let originalContent: string | null = null;
+    if (doc.source_type === "note") {
+      const { data: chunks } = await supabase
+        .from("document_chunks")
+        .select("content, chunk_index")
+        .eq("document_id", data.id)
+        .order("chunk_index", { ascending: true });
+      if (chunks && chunks.length > 0) {
+        originalContent = chunks.map((c: any) => c.content).join("\n\n");
+      }
+    }
+
+    return { doc, related, originalContent };
   });
 
 // --- Delete a document and its file ---
