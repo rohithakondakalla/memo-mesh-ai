@@ -161,16 +161,22 @@ async function processText(
 export const addNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ content: z.string().min(1) }).parse(input),
+    z
+      .object({
+        content: z.string().min(1),
+        title: z.string().trim().max(200).optional(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    const initialTitle = data.title?.trim() || "New note";
     const { data: doc, error } = await supabase
       .from("documents")
       .insert({
         user_id: userId,
         source_type: "note",
-        title: "New note",
+        title: initialTitle,
         status: "processing",
       })
       .select()
@@ -179,6 +185,12 @@ export const addNote = createServerFn({ method: "POST" })
 
     try {
       await processText(supabase, doc.id, userId, data.content);
+      if (data.title && data.title.trim()) {
+        await supabase
+          .from("documents")
+          .update({ title: data.title.trim().slice(0, 200) })
+          .eq("id", doc.id);
+      }
     } catch (e) {
       await supabase
         .from("documents")
@@ -187,6 +199,53 @@ export const addNote = createServerFn({ method: "POST" })
       throw e;
     }
     return { id: doc.id };
+  });
+
+// --- Update an existing note (title/body) and re-run ingestion ---
+export const updateNote = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        content: z.string().min(1),
+        title: z.string().trim().max(200).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: existing, error: fetchErr } = await supabase
+      .from("documents")
+      .select("id, source_type")
+      .eq("id", data.id)
+      .single();
+    if (fetchErr) throw fetchErr;
+    if (existing.source_type !== "note") {
+      throw new Error("Only notes can be edited.");
+    }
+
+    await supabase
+      .from("documents")
+      .update({ status: "processing", error: null })
+      .eq("id", data.id);
+
+    try {
+      await processText(supabase, data.id, userId, data.content);
+      if (data.title && data.title.trim()) {
+        await supabase
+          .from("documents")
+          .update({ title: data.title.trim().slice(0, 200) })
+          .eq("id", data.id);
+      }
+    } catch (e) {
+      await supabase
+        .from("documents")
+        .update({ status: "failed", error: (e as Error).message })
+        .eq("id", data.id);
+      throw e;
+    }
+    return { ok: true };
   });
 
 // --- Register an uploaded file (fast insert, returns processing row) ---
