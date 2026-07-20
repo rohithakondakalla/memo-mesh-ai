@@ -642,7 +642,7 @@ function UploadDialog({
 
 // ---------- Document detail ----------
 
-function DocumentDialog({
+export function DocumentDialog({
   documentId,
   onClose,
   onChanged,
