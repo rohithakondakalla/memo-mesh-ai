@@ -1,12 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { supabase } from "@/integrations/supabase/client";
 import { getChatHistory, clearChat } from "@/lib/chat.functions";
+import { listDocuments } from "@/lib/memories.functions";
 import { AppShell } from "@/components/app-shell";
+import { DocumentDialog } from "@/routes/_authenticated/vault";
 import {
   Conversation,
   ConversationContent,
@@ -34,6 +36,10 @@ import {
   Link2,
   MessageCircleQuestion,
   Eraser,
+  CalendarClock,
+  Loader2,
+  AlertCircle,
+  ExternalLink,
 } from "lucide-react";
 import logo from "@/assets/memory-os-logo.png";
 import { toast } from "sonner";
