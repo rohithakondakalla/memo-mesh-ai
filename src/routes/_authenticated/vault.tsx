@@ -940,23 +940,6 @@ export function DocumentDialog({
                       : "Open original file"}
                   </button>
                 )}
-                  <img
-                    src={fileUrl}
-                    alt={data.doc.title}
-                    className="max-h-64 rounded-lg border border-border object-contain"
-                  />
-                )}
-                {fileUrl && data.doc.source_type === "pdf" && (
-                  <a
-                    href={fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
-                  >
-                    <FileText className="h-4 w-4" />
-                    Open original PDF
-                  </a>
-                )}
               </div>
             )}
           </>
