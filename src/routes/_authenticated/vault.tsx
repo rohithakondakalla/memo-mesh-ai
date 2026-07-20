@@ -661,21 +661,67 @@ export function DocumentDialog({
   const [editTitle, setEditTitle] = useState("");
   const [editBody, setEditBody] = useState("");
   const [saving, setSaving] = useState(false);
+  const [opening, setOpening] = useState(false);
 
+  // Preview signed URL for inline image rendering only.
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      if (data?.doc?.file_path) {
+      if (data?.doc?.file_path && data.doc.file_mime?.startsWith("image/")) {
         try {
           const { url } = await getFileUrl({
             data: { path: data.doc.file_path },
           });
-          setFileUrl(url);
+          if (!cancelled) setFileUrl(url);
         } catch {
-          setFileUrl(null);
+          if (!cancelled) setFileUrl(null);
         }
       }
     })();
-  }, [data?.doc?.file_path]);
+    return () => {
+      cancelled = true;
+    };
+  }, [data?.doc?.file_path, data?.doc?.file_mime]);
+
+  const openOriginal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!data?.doc?.file_path) {
+      toast.error("Original file is unavailable.");
+      return;
+    }
+    // Open a blank tab synchronously so popup blockers don't swallow it.
+    const newTab = window.open("", "_blank", "noopener,noreferrer");
+    setOpening(true);
+    (async () => {
+      try {
+        const { url } = await getFileUrl({
+          data: { path: data.doc.file_path },
+        });
+        if (!url) throw new Error("No signed URL returned.");
+        if (newTab) {
+          newTab.opener = null;
+          newTab.location.href = url;
+        } else {
+          const a = document.createElement("a");
+          a.href = url;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+      } catch (err) {
+        if (newTab) newTab.close();
+        console.error("[Open original]", err);
+        toast.error(
+          `Unable to open the original file. ${(err as Error).message || "Please try again."}`,
+        );
+      } finally {
+        setOpening(false);
+      }
+    })();
+  };
 
   const startEdit = () => {
     if (!data) return;
