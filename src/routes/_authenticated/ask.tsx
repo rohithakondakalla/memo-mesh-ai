@@ -46,8 +46,22 @@ export const Route = createFileRoute("/_authenticated/ask")({
   validateSearch: z.object({
     q: z.string().optional(),
   }),
+  errorComponent: ({ error, reset }) => (
+    <AppShell>
+      <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+        <p className="text-sm text-muted-foreground">
+          Something went wrong loading Ask.
+        </p>
+        <p className="max-w-md text-xs text-muted-foreground/80">
+          {error instanceof Error ? error.message : "Unknown error"}
+        </p>
+        <Button size="sm" onClick={() => reset()}>Try again</Button>
+      </div>
+    </AppShell>
+  ),
   component: AskPage,
 });
+
 
 type Source = { documentId: string; title: string; sourceType: string };
 type RelatedMemory = {
