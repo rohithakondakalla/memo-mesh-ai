@@ -331,39 +331,33 @@ function ChatInner({
                     )}
 
                     {isAssistant && meta.sources.length > 0 && (
-                      <Section
+                      <DocSection
                         icon={FileText}
                         title="Source Documents"
-                      >
-                        {meta.sources.map((src) => {
-                          const Icon = sourceIcon[src.sourceType] ?? FileText;
-                          return (
-                            <Chip key={src.documentId}>
-                              <Icon className="h-3 w-3" />
-                              {src.title}
-                            </Chip>
-                          );
-                        })}
-                      </Section>
+                        items={meta.sources.map((s) => ({
+                          documentId: s.documentId,
+                          fallbackTitle: s.title,
+                          fallbackType: s.sourceType,
+                        }))}
+                        docsById={docsById}
+                        onOpen={setOpenDocId}
+                      />
                     )}
 
                     {isAssistant && meta.related.length > 0 && (
-                      <Section icon={Link2} title="Related Memories">
-                        {meta.related.map((r) => {
-                          const Icon = sourceIcon[r.sourceType] ?? FileText;
-                          return (
-                            <Chip key={r.documentId} muted>
-                              <Icon className="h-3 w-3" />
-                              {r.title}
-                              {r.eventName && (
-                                <span className="ml-1 text-[10px] text-muted-foreground">
-                                  · {r.eventName}
-                                </span>
-                              )}
-                            </Chip>
-                          );
-                        })}
-                      </Section>
+                      <DocSection
+                        icon={Link2}
+                        title="Related Memories"
+                        muted
+                        items={meta.related.map((r) => ({
+                          documentId: r.documentId,
+                          fallbackTitle: r.title,
+                          fallbackType: r.sourceType,
+                          fallbackEvent: r.eventName ?? undefined,
+                        }))}
+                        docsById={docsById}
+                        onOpen={setOpenDocId}
+                      />
                     )}
 
                     {isAssistant && meta.followUps.length > 0 && (
