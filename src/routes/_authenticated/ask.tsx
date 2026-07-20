@@ -268,16 +268,20 @@ function ChatInner({
             </ConversationEmptyState>
           ) : (
             messages.map((message) => {
-              const meta =
-                (message.metadata as AssistantMetadata | undefined) ??
-                undefined;
+              const raw = message.metadata as Partial<AssistantMetadata> | undefined;
+              const meta: AssistantMetadata = {
+                sources: Array.isArray(raw?.sources) ? raw!.sources! : [],
+                related: Array.isArray(raw?.related) ? raw!.related! : [],
+                relevance: (raw?.relevance ?? "none") as Relevance,
+                followUps: Array.isArray(raw?.followUps) ? raw!.followUps! : [],
+              };
               const isAssistant = message.role === "assistant";
               return (
                 <Message from={message.role} key={message.id}>
                   <MessageContent>
                     <MessageResponse>{getText(message)}</MessageResponse>
 
-                    {isAssistant && meta && meta.relevance !== "none" && (
+                    {isAssistant && meta.relevance !== "none" && (
                       <div className="mt-3 flex items-center gap-2">
                         <span
                           className={cn(
@@ -291,7 +295,7 @@ function ChatInner({
                       </div>
                     )}
 
-                    {isAssistant && meta && meta.sources.length > 0 && (
+                    {isAssistant && meta.sources.length > 0 && (
                       <Section
                         icon={FileText}
                         title="Source Documents"
@@ -308,7 +312,7 @@ function ChatInner({
                       </Section>
                     )}
 
-                    {isAssistant && meta && meta.related.length > 0 && (
+                    {isAssistant && meta.related.length > 0 && (
                       <Section icon={Link2} title="Related Memories">
                         {meta.related.map((r) => {
                           const Icon = sourceIcon[r.sourceType] ?? FileText;
@@ -327,7 +331,7 @@ function ChatInner({
                       </Section>
                     )}
 
-                    {isAssistant && meta && meta.followUps.length > 0 && (
+                    {isAssistant && meta.followUps.length > 0 && (
                       <Section
                         icon={MessageCircleQuestion}
                         title="Suggested Follow-up Questions"
@@ -348,6 +352,7 @@ function ChatInner({
                 </Message>
               );
             })
+
           )}
           {status === "submitted" && (
             <Message from="assistant">
