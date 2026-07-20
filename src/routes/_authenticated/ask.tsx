@@ -172,6 +172,16 @@ function ChatInner({
   onConsumePrefill: () => void;
 }) {
   const queryClient = useQueryClient();
+  const [openDocId, setOpenDocId] = useState<string | null>(null);
+  const { data: allDocs } = useQuery({
+    queryKey: ["documents"],
+    queryFn: () => listDocuments() as Promise<any[]>,
+  });
+  const docsById = useMemo(() => {
+    const m = new Map<string, any>();
+    for (const d of allDocs ?? []) m.set(d.id, d);
+    return m;
+  }, [allDocs]);
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
