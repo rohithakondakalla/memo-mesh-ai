@@ -184,7 +184,12 @@ function ChatInner({
   const { messages, sendMessage, status } = useChat({
     messages: initialMessages,
     transport,
+    onError: (err) => {
+      console.error("Ask chat error:", err);
+      toast.error(err?.message || "The assistant hit an error. Please try again.");
+    },
   });
+
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
