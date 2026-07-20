@@ -244,8 +244,10 @@ ${contextBlock || "(No relevant memories were found for this question.)"}`;
             sources,
             related,
             relevance,
+            followUps: [] as string[],
           }),
         });
+
       },
     },
   },
