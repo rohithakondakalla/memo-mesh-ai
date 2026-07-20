@@ -923,6 +923,29 @@ export function DocumentDialog({
                     className="max-h-64 rounded-lg border border-border object-contain"
                   />
                 )}
+                {data.doc.source_type !== "note" && data.doc.file_path && (
+                  <button
+                    type="button"
+                    onClick={openOriginal}
+                    disabled={opening}
+                    className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline disabled:opacity-60"
+                  >
+                    <FileText className="h-4 w-4" />
+                    {opening
+                      ? "Opening…"
+                      : data.doc.source_type === "pdf"
+                      ? "Open original PDF"
+                      : data.doc.file_mime?.startsWith("image/")
+                      ? "Open original image"
+                      : "Open original file"}
+                  </button>
+                )}
+                  <img
+                    src={fileUrl}
+                    alt={data.doc.title}
+                    className="max-h-64 rounded-lg border border-border object-contain"
+                  />
+                )}
                 {fileUrl && data.doc.source_type === "pdf" && (
                   <a
                     href={fileUrl}
