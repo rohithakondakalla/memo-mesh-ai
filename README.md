@@ -2,7 +2,7 @@
 
 > **Give what you remember. Get what you want.**
 
-Memory Weaver is an AI-powered personal memory assistant that transforms uploaded documents into an intelligent, searchable second brain. Instead of searching through folders, users can ask questions naturally, and the AI understands, connects, and retrieves information with supporting source documents.
+Memory Weaver is an AI-powered personal memory assistant that transforms uploaded documents into an intelligent, searchable second brain. Users can upload PDFs, Word documents, images, text files, and personal notes. The AI reads and understands every document, extracts key information, automatically groups related documents into meaningful events, and allows users to create and manage notes. Instead of simply retrieving documents, Memory Weaver analyzes their content to answer questions in natural language, providing accurate responses with the original source documents for verification.
 
 ---
 
