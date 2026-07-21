@@ -90,10 +90,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Your second brain. Upload anything, then ask in plain language and get sourced answers woven from your own memories.",
+          "Memory Weaver quietly organizes your PDFs, images, and notes into meaningful memories. Ask naturally instead of searching folders — from memory to meaning.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Memory Weaver — From memory to meaning." },
+      { name: "twitter:description", content: "Memory Weaver quietly organizes your PDFs, images, and notes into meaningful memories. Ask naturally instead of searching folders — from memory to meaning." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/1d936c1b-b198-425b-8569-cdbd9286a94d/id-preview-37db1e3c--c2456914-96f6-4532-80a4-541f7f8d1ff7.lovable.app-1784617605874.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/1d936c1b-b198-425b-8569-cdbd9286a94d/id-preview-37db1e3c--c2456914-96f6-4532-80a4-541f7f8d1ff7.lovable.app-1784617605874.png" },
     ],
     links: [
       {
